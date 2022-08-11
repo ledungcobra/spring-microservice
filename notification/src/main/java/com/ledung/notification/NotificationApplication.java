@@ -1,16 +1,18 @@
 package com.ledung.notification;
 
-import com.ledung.amqp.RabbitMQMessageProducer;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 @SpringBootApplication(scanBasePackages = {
         "com.ledung.notification",
         "com.ledung.amqp"
 })
+@PropertySources(
+        {@PropertySource("classpath:clients-${spring.profiles.active}.properties")}
+)
 @EnableEurekaClient
 public class NotificationApplication {
     public static void main(String[] args) {

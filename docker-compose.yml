@@ -44,48 +44,26 @@ services:
     restart: unless-stopped
     networks:
       - postgres
-  eureka-server:
-    pull_policy: missing
-    image: ledungcobra/eureka-server:latest
-    container_name: eureka-server
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    networks:
-      - spring
-    ports:
-      - "8761:8761"
-    depends_on:
-      - zipkin
-  apigw:
-    image: ledungcobra/apigw:latest
-    container_name: apigw
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    ports:
-      - "8083:8083"
-    networks:
-      - spring
-    depends_on:
-      - zipkin
-      - eureka-server
-      - postgres
-      - rabbitmq
+
   customer:
     image: ledungcobra/customer:latest
     container_name: customer
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
     networks:
       - spring
       - postgres
     depends_on:
       - zipkin
-      - eureka-server
       - postgres
       - rabbitmq
   fraud:
     image: ledungcobra/fraud:latest
     container_name: fraud
+    ports:
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
@@ -93,12 +71,13 @@ services:
       - postgres
     depends_on:
       - zipkin
-      - eureka-server
       - postgres
       - rabbitmq
   notification:
     image: ledungcobra/notification:latest
     container_name: notification
+    ports:
+      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
@@ -106,7 +85,6 @@ services:
       - postgres
     depends_on:
       - zipkin
-      - eureka-server
       - postgres
       - rabbitmq
 

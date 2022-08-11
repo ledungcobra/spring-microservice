@@ -6,7 +6,7 @@ spring:
   datasource:
     username: postgres
     password: postgres
-    url: jdbc:postgresql://localhost:5432/notification
+    url: jdbc:postgresql://localhost:5432/notification?createDatabaseIfNotExist=true
   jpa:
     properties:
       hibernate:
@@ -25,6 +25,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     fetch-registry: true
     register-with-eureka: true
+    enabled: false
 
 rabbitmq:
   exchanges:
