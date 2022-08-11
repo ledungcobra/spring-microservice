@@ -1,5 +1,6 @@
 package com.ledung.fraud;
 
+import com.ledung.clients.fraud.FraudCheckResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/fraud-check")
 @RequiredArgsConstructor
-public class FraudController {
+public class FraudController{
 
     private final FraudCheckService fraudCheckService;
 

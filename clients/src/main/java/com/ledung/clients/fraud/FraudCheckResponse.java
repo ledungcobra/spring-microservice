@@ -1,4 +1,4 @@
-package com.ledung.customer;
+package com.ledung.clients.fraud;
 
 public record FraudCheckResponse(boolean isFraudster) {
 }
