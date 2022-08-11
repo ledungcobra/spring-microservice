@@ -1,5 +1,6 @@
 package com.ledung.customer;
 
+import com.ledung.amqp.RabbitMQMessageProducer;
 import com.ledung.clients.fraud.FraudClient;
 import com.ledung.clients.notification.NotificationClient;
 import com.ledung.clients.notification.NotificationRequest;
@@ -12,7 +13,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
-    private final NotificationClient notificationClient;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public void registerCustomer(CustomerRegistrationRequest request) {
         // todo: check if email is valid
@@ -29,11 +30,12 @@ public class CustomerService {
         if (response != null && response.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
+        var notificationRequest = new NotificationRequest(persistedCustomer.getId(), persistedCustomer.getEmail(),
+                String.format("Hi %s welcome to microservice app", persistedCustomer.getFirstName()));
 
         // todo: send notification
-        notificationClient.sendNotification(
-                new NotificationRequest(persistedCustomer.getId(), persistedCustomer.getEmail(),
-                        String.format("Hi %s welcome to microservice app", persistedCustomer.getFirstName())));
+        rabbitMQMessageProducer.publish(notificationRequest,
+                "internal.exchange","internal.notification.routing-key");
 
     }
 }

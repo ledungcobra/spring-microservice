@@ -31,6 +31,8 @@ services:
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
+    networks:
+      - spring
     ports:
       - "9411:9411"
   rabbitmq:
@@ -42,11 +44,77 @@ services:
     restart: unless-stopped
     networks:
       - postgres
+  eureka-server:
+    pull_policy: missing
+    image: ledungcobra/eureka-server:latest
+    container_name: eureka-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+    ports:
+      - "8761:8761"
+    depends_on:
+      - zipkin
+  apigw:
+    image: ledungcobra/apigw:latest
+    container_name: apigw
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8083:8083"
+    networks:
+      - spring
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+  customer:
+    image: ledungcobra/customer:latest
+    container_name: customer
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+  fraud:
+    image: ledungcobra/fraud:latest
+    container_name: fraud
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+  notification:
+    image: ledungcobra/notification:latest
+    container_name: notification
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
 
 networks:
   postgres:
     driver: bridge
-
+  spring:
+    driver: bridge
 volumes:
   postgres:
   pgadmin:
